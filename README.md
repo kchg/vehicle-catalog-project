@@ -1,4 +1,4 @@
-fullstack-nanodegree-vm
+Vehicle Catalog Project
 =============
 
-Common code for the Relational Databases and Full Stack Fundamentals courses
+WIP - Full stack CRUD project utilizing flask
