@@ -2,66 +2,62 @@
 <html lang="en">
 
 <head>
-  <!--LOAD PRE-REQUISITES FOR GOOGLE SIGN IN -->
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js">
-  </script>
+    <!--LOAD PRE-REQUISITES FOR GOOGLE SIGN IN -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js">
+    </script>
 
-<script src="//apis.google.com/js/platform.js?onload=start"> </script>
-<!-- END PRE-REQUISITES FOR GOOGLE SIGN IN -->
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" contents="IE-Edge">
-<meta name="viewport" content="width = device-width, initial-scale = 1">
-<title>{% block title %}Used Vehicle Catalog{% endblock %}</title>
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"
-    crossorigin="anonymous">
-<link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+    <script src="//apis.google.com/js/platform.js?onload=start"> </script>
+    <!-- END PRE-REQUISITES FOR GOOGLE SIGN IN -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" contents="IE-Edge">
+    <meta name="viewport" content="width = device-width, initial-scale = 1">
+    <title>{% block title %}Ye Olde Automobiles{% endblock %}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"
+        crossorigin="anonymous">
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
 </head>
+
 <body>
-    <div class="container">
-        <div class="page-header">
-            <section class="header_info">
-                <a href="{{ url_for('catalog')}}" class="header_title">Used Vehicle Catalog</a>
-                <p>{{login_session['username']}}</p>
-                <div id="signinButton">
-                    <span class="g-signin" data-scope="openid email" data-clientid="555556284452-e2rn9fcr9ire62mapomgsb7942sgna3u.apps.googleusercontent.com"
-                        redirect-uri="postmessage" data-accesstype="offline" data-cookiepolicy="single_host_origin" data-callback="signInCallback"
-                        data-approvalprompt="force">
-                    </span>
-                </div>
-                <div id='signoutButton'>
-                    <a href="{{url_for('gdisconnect')}}">Logout</a>
-                </div>
-            </section>
-
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('catalog')}}">Ye Olde Automobiles</a>
+            <div id="signinButton">
+                <span class="g-signin" data-scope="openid email" data-clientid="555556284452-e2rn9fcr9ire62mapomgsb7942sgna3u.apps.googleusercontent.com"
+                    redirect-uri="postmessage" data-accesstype="offline" data-cookiepolicy="single_host_origin" data-callback="signInCallback"
+                    data-approvalprompt="force">
+                </span>
+            </div>
+                <a id="signoutButton" class="btn btn-danger" href="{{url_for('gdisconnect')}}">Logout</a>
         </div>
-        <script>
-            var token = "{{ login_session['access_token'] }}";
-            if (token == 'null' || token == '') {
-                $('#signinButton').show();
-                $('#signoutButton').hide();
-            } else {
-                $('#signinButton').hide();
-                $('#signoutButton').show();
-            }
-        </script>
-        <div class='flash'>
-            {% with messages = get_flashed_messages() %} {% if messages %}
-            <ul>
-                {% for message in messages %}
-                <li>
-                    <strong> {{ message }} </strong>
-                </li>
-                {% endfor %}
-            </ul>
-            {% endif %} {% endwith %}
+    </nav>
+    <script>
+        var token = "{{ login_session['access_token'] }}";
+        if (token == 'null' || token == '') {
+            $('#signinButton').show();
+            $('#signoutButton').hide();
+        } else {
+            $('#signinButton').hide();
+            $('#signoutButton').show();
+        }
+    </script>
+    <div class='container'>
+        {% with messages = get_flashed_messages(with_categories=true) %} 
+        {% if messages %}
+                <div class="alert alert-{{ messages.0.0 }} text-center" role="alert">
+            {% for category, message in messages %}
+                {{ message }} </br>
+            {% endfor %}
         </div>
+        {% endif %}
+        {% endwith %}
+    </div>
 
 
 
 
-        <article id="content">
-            {% block content %}{% endblock %}
-        </article>
+    <div class='container'>
+        {% block content %}{% endblock %}
+    </div>
     </div>
 
 

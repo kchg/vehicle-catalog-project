@@ -1,0 +1,60 @@
+{% extends "base.html" %} {% block content %}
+<div class="jumbotron vehicle">
+    <div class="page-header text-center">
+        <h1>Edit a vehicle</h1>
+    </br>
+    </div>
+
+    <form action="{{url_for('addVehicle')}}" method= 'post'>
+        <div class="form-row">
+            <div class="form-group col-3">
+                <label for="inputYear">Year</label>
+                <input type="number" class="form-control" id="inputYear" min="1900" max="2099" step="1" placeholder="Year">
+            </div>
+            <div class="form-group col-3">
+                <label for="inputMake">Make</label>
+                <input type="text" class="form-control" id="inputMake" placeholder="Ex: Toyota">
+            </div>
+            <div class="form-group col-3">
+                <label for="inputModel">Model</label>
+                <input type="text" class="form-control" id="inputModel" placeholder="Ex: Corolla">
+            </div>
+            <div class="form-group col-3">
+                <label for="inputTrim">Trim</label>
+                <input type="text" class="form-control" id="inputTrim" placeholder="Ex: Sport">
+            </div>
+
+        </div>
+        <div class="form-row">
+            <div class="form-group col-3">
+                <label for="inputPrice">Price (USD)</label>
+                <input type="number" class="form-control" id="inputPrice" step="0.01" placeholder="Ex: 15459.99">
+            </div>
+            <div class="form-group col-3">
+                <label for="inputMileage">Mileage (miles)</label>
+                <input type="number" class="form-control" id="inputPrice" step="1" placeholder="Ex: 20000">
+            </div>
+            <div class="form-group col-8">
+                <label for="inputCategory">Category</label>
+                <select id="inputCategory" class="form-control">
+                    {% if category_name %}
+                    <option selected>{{category_name}}</option>
+                    {% endif %} {% for i in categories %}
+                    <option>{{i.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-12">
+                <label for="description">Description</label>
+                <textarea class="form-control" id="inputDescription" rows="10"></textarea>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+
+</div>
+    {% endblock %}

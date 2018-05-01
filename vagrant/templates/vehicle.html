@@ -1,11 +1,22 @@
-{% extends "base.html" %}
-{% block content %}
-<div class="information">
-    <h1 class="vehicle_title">{{vehicle.year}} {{vehicle.make}} {{vehicle.model}} - ${{vehicle.price}}</h1>
-    <div class="information">
-        <img class="vehicle_image" src="https://static.cargurus.com/images/site/2015/09/29/16/17/2016_bmw_4_series-pic-4912401708495649230-1600x1200.jpeg"/>
-        <p class="description">insert description here</p>
-    
+{% extends "base.html" %} {% block content %}
+<div class="jumbotron vehicle">
+    <div class="page-header text-center">
+
+        <h1>{{vehicle.year}} {{vehicle.make}} {{vehicle.model}} - ${{vehicle.price}}, {{vehicle.mileage}} miles</h1>
     </div>
+    <div class="panel panel-default" style="margin-top: 20px">
+        <div class="panel-body text-center">
+            <img class="img-fluid" src="{{vehicle.image_url}}" />
+        </div>
     </div>
+    <div class="panel panel-default" style="margin-top: 40px">
+        <div class="panel-heading">
+            <h3 class="panel-title">Description</h3>
+        </div>
+        <div class="panel-body">
+            {{vehicle.description}}
+        </div>
+    </div>
+</div>
+</div>
     {% endblock %}

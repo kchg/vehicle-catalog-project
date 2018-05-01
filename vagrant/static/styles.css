@@ -1,11 +1,4 @@
 body {
-    font-family: sans-serif;
-    background-color: #e5e5e5;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    border: 0;
-    vertical-align: baseline;
 }
 
 
@@ -31,19 +24,17 @@ a {
     background-color: #333333
 }
 
+.flash-message {
+    text-align: center;
+    margin: auto;
+    width: 30%;
+}
+
 /*
 Header
 */
 
-.header {
-    display: flex;
-    margin: 0px;
-    width: 100%;
-    text-align: center;
-    background-color: white;
-    padding-bottom: 30px;
-    background-clip: content-box;
-    min-height: 75px;
+.page-header {
 }
 
 .header_info {
@@ -71,6 +62,18 @@ Header
     text-align: center;
     text-decoration: none;
     padding: 20px;
+}
+
+.g-signin {
+    width: 100%;
+}
+
+.g-signin>div {
+    margin: 0 auto;
+}
+
+.signinButton {
+    margin: auto;
 }
 
 /*
@@ -103,26 +106,22 @@ content {
     align-items: center;
 }
 
-.categories {
-    flex: 1 1 0;
-    text-align: left;
+.category {
+    padding-right: 20px;
     border-right: 1px solid black;
-    padding: 20px;
 }
 
 .recent,
 .items {
-    flex: 2 1 0;
     text-align: left;
-    padding: 20px;
+    padding-left: 40px;
+}
+
+.vehicle {
+    align-items: center;
 }
 
 .vehicle_image {
-    width: auto;
-    height: auto;
-    max-width: 80%;
-    object-fit: contain;
-    padding: 30px;
     margin: auto;
 }
 
@@ -146,8 +145,6 @@ content {
     width: 50%;
     float: right;
 }
-
-.editdeletepane {}
 
 .flash {
     background: #cee5f5;

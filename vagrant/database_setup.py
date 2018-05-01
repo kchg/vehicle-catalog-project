@@ -37,15 +37,21 @@ class Category(Base):
 
 class Vehicle(Base):
     __tablename__ = 'vehicle'
+    id = Column(Integer, primary_key=True)
 
     year = Column(Integer, nullable=False)
     make = Column(String(80), nullable=False)
     model = Column(String(80), nullable=False)
-    id = Column(Integer, primary_key=True)
+    trim = Column(String(80))
     price = Column(Float, nullable = False)
+    mileage = Column(Integer, nullable = False)
     description = Column(String(250))
+    
+    image_url = Column(String(250))
+
     category_name = Column(String(80), ForeignKey('category.name'))
     category = relationship(Category, cascade="all, delete-orphan", single_parent=True)
+
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
 

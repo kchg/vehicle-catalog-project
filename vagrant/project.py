@@ -145,7 +145,7 @@ def gconnect():
     login_session['user_id'] = user_id
 
     print "done!"
-    flash('Welcome %s!' % login_session['username'])
+    flash('Welcome %s!' % login_session['username'], "success")
     return 'done'
 
 @app.route('/gdisconnect')
@@ -168,19 +168,19 @@ def gdisconnect():
     print result
     if result['status'] == '200':
         login_session.clear()
-        flash('Sucessfully disconnected.')
+        flash('Sucessfully disconnected.', "success")
     else:
         login_session.clear()
-        flash('Logged out but failed to revoke token for given user.')
+        flash('Logged out but failed to revoke token for given user.', "warning")
     return redirect(url_for('catalog'))
 
 @app.route('/')
 @app.route('/catalog')
 def catalog():
-    state = get_state()
     categories = session.query(Category).all()
     recents = session.query(Vehicle).order_by(Vehicle.id.desc()).limit(10)
-    return render_template('catalog.html', categories=categories, recents=recents, login_session=login_session, STATE=state)
+    return render_template('catalog.html', categories=categories, recents=recents, 
+        login_session=login_session, STATE=get_state())
 
 @app.route('/catalog/<category_name>/items')
 def categoryItems(category_name):
@@ -188,7 +188,7 @@ def categoryItems(category_name):
     category = session.query(Category).filter_by(name=category_name).one()
     items = session.query(Vehicle).filter_by(category_name=category.name)
     return render_template('category.html', categories=categories, items=items, category=category,
-        login_session=login_session, state=state)
+        login_session=login_session, state=get_state())
 
 @app.route('/catalog/<category_name>/<item_id>/')
 def item(category_name, item_id):
@@ -196,60 +196,28 @@ def item(category_name, item_id):
     vehicle = session.query(Vehicle).filter_by(category=category).filter_by(id=item_id).one()
     return render_template('vehicle.html', vehicle=vehicle, login_session=login_session, state=get_state()) 
 
-
-@app.route('/restaurants/<int:restaurant_id>/menu/JSON')
-def restaurantMenuJSON(restaurant_id):
-    restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
-    items = session.query(MenuItem).filter_by(
-        restaurant_id=restaurant_id).all()
-    return jsonify(MenuItems=[i.serialize for i in items])
-
-
-@app.route('/catalog/<category_name>/new', methods=['GET', 'POST'])
-def newCategory(category_name):
+@app.route('/catalog/add', methods=['GET', 'POST'])
+@app.route('/catalog/<category_name>/add', methods=['GET', 'POST'])
+def addVehicle(category_name=None):
+    if 'username' not in login_session:
+        flash('Login to add new vehicles',"danger")
+        if category_name is not None:
+            return redirect(url_for('categoryItems', category_name=category_name))
+        return redirect('/')
     if request.method == 'POST':
-        newCategory = Category(name=request.form['name'])
-        newItem = MenuItem(name=request.form['name'], description=request.form[
-                           'description'], price=request.form['price'], course=request.form['course'], restaurant_id=restaurant_id)
-        session.add(newItem)
+        print('in post method')
+        newVehicle = Vehicle(year=request.form.get('inputYear', None), make=request.form.get('inputMake', None), model=request.form.get('inputModel', None),
+        price=request.form.get('inputPrice', None), category_name=request.form.get('inputCategory', None), mileage=request.form.get('inputMileage', None),
+        description=request.form.get('inputDescription', None), trim=request.form.get('inputTrim', None), image_url=request.form.get('inputURL', None), user_id=login_session['user_id'])
+        session.add(newVehicle)
         session.commit()
-        return redirect(url_for('restaurantMenu', restaurant_id=restaurant_id))
+        flash('{0} {1} {2} {3} Added'.format(newVehicle.year, newVehicle.make, newVehicle.model, newVehicle.trim), "success")
+        if category_name is not None:
+            return redirect(url_for('categoryItems', category_name=category_name))
+        return redirect('/')
     else:
-        return render_template('newmenuitem.html', restaurant_id=restaurant_id)
-
-
-@app.route('/restaurants/<int:restaurant_id>/<int:menu_id>/edit',
-           methods=['GET', 'POST'])
-def editMenuItem(restaurant_id, menu_id):
-    editedItem = session.query(MenuItem).filter_by(id=menu_id).one()
-    if request.method == 'POST':
-        if request.form['name']:
-            editedItem.name = request.form['name']
-        if request.form['description']:
-            editedItem.description = request.form['name']
-        if request.form['price']:
-            editedItem.price = request.form['price']
-        if request.form['course']:
-            editedItem.course = request.form['course']
-        session.add(editedItem)
-        session.commit()
-        return redirect(url_for('restaurantMenu', restaurant_id=restaurant_id))
-    else:
-
-        return render_template(
-            'editmenuitem.html', restaurant_id=restaurant_id, menu_id=menu_id, item=editedItem)
-
-
-@app.route('/restaurants/<int:restaurant_id>/<int:menu_id>/delete',
-           methods=['GET', 'POST'])
-def deleteMenuItem(restaurant_id, menu_id):
-    itemToDelete = session.query(MenuItem).filter_by(id=menu_id).one()
-    if request.method == 'POST':
-        session.delete(itemToDelete)
-        session.commit()
-        return redirect(url_for('restaurantMenu', restaurant_id=restaurant_id))
-    else:
-        return render_template('deleteconfirmation.html', item=itemToDelete)
+        categories = session.query(Category).all()
+        return render_template('addvehicle.html', category_name=category_name, login_session=login_session, state=get_state(), categories=categories)
 
 
 if __name__ == '__main__':
