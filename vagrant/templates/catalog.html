@@ -21,8 +21,16 @@
                 {% endfor %}
             </ul>
 
-            <a href="{{url_for('addVehicle')}}" class="btn btn-primary">Add a Vehicle</a>
+            <a href="{{url_for('addVehicle')}}" id="newButton" class="btn btn-primary">Add a Vehicle</a>
         </div>
     </div>
 </div>
+<script>
+        var token = "{{ login_session['access_token'] }}";
+        if (token == 'null' || token == '') {
+            $('#newButton').hide();
+        } else {
+            $('#newButton').show();
+        }
+    </script>
 {% endblock %}

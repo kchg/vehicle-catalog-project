@@ -9,6 +9,10 @@
             <img class="img-fluid" src="{{vehicle.image_url}}" />
         </div>
     </div>
+    <div class="panel panel-default text-center" style="margin-top: 40px">
+        <a href="{{url_for('editVehicle', category_name=vehicle.category_name, item_id=vehicle.id)}}" id="editButton" class="btn btn-primary">Edit</a>
+        <a href="{{url_for('deleteVehicle', category_name=vehicle.category_name, item_id=vehicle.id)}}" id="deleteButton" class="btn btn-danger">Delete</a>
+    </div>
     <div class="panel panel-default" style="margin-top: 40px">
         <div class="panel-heading">
             <h3 class="panel-title">Description</h3>
@@ -19,4 +23,14 @@
     </div>
 </div>
 </div>
+<script>
+        var token = "{{ login_session['access_token'] }}";
+        if (token == 'null' || token == '') {
+            $('#editButton').hide();
+            $('#deleteButton').hide();
+        } else {
+            $('#editButton').show();
+            $('#deleteButton').show();
+        }
+    </script>
     {% endblock %}

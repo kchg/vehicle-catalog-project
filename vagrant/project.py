@@ -208,7 +208,7 @@ def addVehicle(category_name=None):
         print('in post method')
         newVehicle = Vehicle(year=request.form.get('inputYear', None), make=request.form.get('inputMake', None), model=request.form.get('inputModel', None),
         price=request.form.get('inputPrice', None), category_name=request.form.get('inputCategory', None), mileage=request.form.get('inputMileage', None),
-        description=request.form.get('inputDescription', None), trim=request.form.get('inputTrim', None), image_url=request.form.get('inputURL', None), user_id=login_session['user_id'])
+        description=request.form.get('inputDescription', None), trim=request.form.get('inputTrim', ""), image_url=request.form.get('inputURL', None), user_id=login_session['user_id'])
         session.add(newVehicle)
         session.commit()
         flash('{0} {1} {2} {3} Added'.format(newVehicle.year, newVehicle.make, newVehicle.model, newVehicle.trim), "success")
@@ -218,6 +218,60 @@ def addVehicle(category_name=None):
     else:
         categories = session.query(Category).all()
         return render_template('addvehicle.html', category_name=category_name, login_session=login_session, state=get_state(), categories=categories)
+
+@app.route('/catalog/<category_name>/<item_id>/edit', methods=['GET', 'POST'])
+def editVehicle(item_id, category_name):
+    if 'username' not in login_session:
+        flash('Login to edit vehicles', 'danger')
+        return redirect(url_for('item', category_name=category_name, item_id=item_id))
+    if request.method == 'POST':
+        editedVehicle = session.query(Vehicle).filter_by(category_name=category_name).filter_by(id=item_id).one()
+        editedVehicle.year = request.form.get('inputYear', None)
+        editedVehicle.make = request.form.get('inputMake', None)
+        editedVehicle.model = request.form.get('inputModel', None)
+        editedVehicle.trim = request.form.get('inputTrim', "")
+        editedVehicle.price = request.form.get('inputPrice', None)
+        editedVehicle.mileage = request.form.get('inputMileage', None)
+        editedVehicle.description = request.form.get('inputDescription', None)
+        editedVehicle.image_url = request.form.get('inputURL', None)
+        editedVehicle.category_name = request.form.get('inputCategory', None)
+        session.add(editedVehicle)
+        session.commit()
+        flash('{0} {1} {2} {3} Edited'.format(editedVehicle.year, editedVehicle.make, editedVehicle.model, editedVehicle.trim), "success")
+        return redirect(url_for('item', category_name=category_name, item_id=item_id))
+
+    else:
+        categories = session.query(Category).all()
+        vehicle = session.query(Vehicle).filter_by(category_name=category_name).filter_by(id=item_id).one()
+        if vehicle.user_id != login_session['user_id']:
+            flash('You cannot edit this vehicle because you are not the owner', 'danger')
+            return redirect(url_for('item', category_name=category_name, item_id=item_id))
+            
+        return render_template('editvehicle.html', category_name=category_name, vehicle=vehicle, categories=categories,
+            state=get_state(), login_session=login_session)
+
+@app.route('/catalog/<category_name>/<item_id>/delete', methods=['GET', 'POST'])
+def deleteVehicle(item_id, category_name):
+    if 'username' not in login_session:
+        flash('Login to delete vehicles', 'danger')
+        return redirect(url_for('item', category_name=category_name, item_id=item_id))
+    if request.method == 'POST':
+        vehicle = session.query(Vehicle).filter_by(category_name=category_name).filter_by(id=item_id).one()
+        session.delete(vehicle)
+        session.commit()
+        flash('Successfully deleted {0} {1} {2} {3}'.format(vehicle.year, vehicle.make, vehicle.model, vehicle.trim), "success")
+        return redirect('/')
+    else:
+        categories = session.query(Category).all()
+        vehicle = session.query(Vehicle).filter_by(category_name=category_name).filter_by(id=item_id).one()
+        if vehicle.user_id != login_session['user_id']:
+            flash('You cannot delete this vehicle because you are not the owner', 'danger')
+            return redirect(url_for('item', category_name=category_name, item_id=item_id))
+            
+        return render_template('deletevehicle.html', vehicle=vehicle,
+            state=get_state(), login_session=login_session)
+
+
 
 
 if __name__ == '__main__':

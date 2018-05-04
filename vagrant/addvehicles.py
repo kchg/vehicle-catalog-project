@@ -47,7 +47,7 @@ session.add(camaro)
 session.commit()
 
 
-lambo = Vehicle(user_id=1, year=2017, make="Lamborghini" ,model="Huracan", trim="LP 580-2 Spyder",
+lambo = Vehicle(user_id=2, year=2017, make="Lamborghini" ,model="Huracan", trim="LP 580-2 Spyder",
 mileage=1254, description=sample_description, price=229533, category=convertible,
 image_url="https://images.autotrader.com/scaler/653/490/hn/c/5e6f409af44f47bdb30ffaeff501c7e1.jpg")
 session.add(lambo)
@@ -58,7 +58,7 @@ coupe = Category(user_id=1, name="Coupe")
 session.add(coupe)
 session.commit()
 
-bmw = Vehicle(user_id=1, year=2017, make="BMW", model="428i", trim="Coupe",
+bmw = Vehicle(user_id=2, year=2017, make="BMW", model="428i", trim="Coupe",
   mileage=15000, description=sample_description, price=15000.00 , 
   image_url="https://images.autotrader.com/scaler/653/490/hn/c/fa0576661fb0455a9e507658549332a9.jpg",
   category=coupe)
