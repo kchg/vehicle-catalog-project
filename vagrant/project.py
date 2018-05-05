@@ -1,16 +1,16 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
+from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import session as login_session
+from flask import make_response, flash
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, User, Category, Vehicle
-from flask import session as login_session
 from functools import wraps
-import random
-import string
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
+import random
+import string
 import httplib2
 import json
-from flask import make_response
 import requests
 
 app = Flask(__name__)
@@ -24,6 +24,7 @@ Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
+
 
 # User Helper Functions
 def createUser(login_session):
@@ -47,10 +48,13 @@ def getUserID(email):
     except:
         return None
 
+
 def get_state():
-    state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in xrange(32))
+    state = ''.join(random.choice(
+            string.ascii_uppercase + string.digits) for x in xrange(32))
     login_session['state'] = state
     return state
+
 
 @app.route('/login')
 def login():
@@ -77,7 +81,7 @@ def gconnect():
     print 'token validated'
 
     try:
-        # Exchange the one-time-token for the credentials (access_token, refresh_token, etc.)
+        # Exchange the one-time-token for the credentials
         oauth_flow = flow_from_clientsecrets('client_secrets.json', scope='')
         oauth_flow.redirect_uri = 'postmessage'
         credentials = oauth_flow.step2_exchange(code)
@@ -118,8 +122,8 @@ def gconnect():
     stored_access_token = login_session.get('access_token')
     stored_gplus_id = login_session.get('gplus_id')
     if stored_access_token is not None and gplus_id == stored_gplus_id:
-        response = make_response(json.dumps('Current user is already connected.'),
-                                 200)
+        response = make_response(json.dumps(
+            'Current user is already connected.'), 200)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -148,12 +152,13 @@ def gconnect():
     flash('Welcome %s!' % login_session['username'], "success")
     return 'done'
 
+
 @app.route('/gdisconnect')
 def gdisconnect():
     access_token = login_session.get('access_token')
     if access_token is None:
         print 'Access Token is None'
-        response = make_response(json.dumps('Current user not connected.'), 401)
+        response = make_response(json.dumps('Current user not connected'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
     print 'In gdisconnect access token is %s', access_token
@@ -161,7 +166,8 @@ def gdisconnect():
     print login_session['username']
 
     # Revoke access_token
-    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
+    url = 'https://accounts.google.com/o/oauth2/revoke?token={0}'.format(
+        login_session['access_token'])
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
     print 'result is '
@@ -171,61 +177,88 @@ def gdisconnect():
         flash('Sucessfully disconnected.', "success")
     else:
         login_session.clear()
-        flash('Logged out but failed to revoke token for given user.', "warning")
+        flash('Logged out but failed to revoke token for given user.',
+              "warning")
     return redirect(url_for('catalog'))
+
 
 @app.route('/')
 @app.route('/catalog')
 def catalog():
     categories = session.query(Category).all()
     recents = session.query(Vehicle).order_by(Vehicle.id.desc()).limit(10)
-    return render_template('catalog.html', categories=categories, recents=recents, 
-        login_session=login_session, STATE=get_state())
+    return render_template('catalog.html', categories=categories,
+                           recents=recents, login_session=login_session,
+                           state=get_state())
+
 
 @app.route('/catalog/<category_name>/items')
 def categoryItems(category_name):
     categories = session.query(Category).all()
     category = session.query(Category).filter_by(name=category_name).one()
     items = session.query(Vehicle).filter_by(category_name=category.name)
-    return render_template('category.html', categories=categories, items=items, category=category,
-        login_session=login_session, state=get_state())
+    return render_template('category.html', categories=categories, items=items,
+                           category=category, login_session=login_session,
+                           state=get_state())
+
 
 @app.route('/catalog/<category_name>/<item_id>/')
 def item(category_name, item_id):
     category = session.query(Category).filter_by(name=category_name).one()
-    vehicle = session.query(Vehicle).filter_by(category=category).filter_by(id=item_id).one()
-    return render_template('vehicle.html', vehicle=vehicle, login_session=login_session, state=get_state()) 
+    vehicle = session.query(Vehicle).filter_by(category=category).filter_by(
+        id=item_id).one()
+    return render_template('vehicle.html', vehicle=vehicle,
+                           login_session=login_session, state=get_state())
+
 
 @app.route('/catalog/add', methods=['GET', 'POST'])
 @app.route('/catalog/<category_name>/add', methods=['GET', 'POST'])
 def addVehicle(category_name=None):
     if 'username' not in login_session:
-        flash('Login to add new vehicles',"danger")
+        flash('Login to add new vehicles', "danger")
         if category_name is not None:
-            return redirect(url_for('categoryItems', category_name=category_name))
+            return redirect(url_for('categoryItems',
+                            category_name=category_name))
         return redirect('/')
     if request.method == 'POST':
-        print('in post method')
-        newVehicle = Vehicle(year=request.form.get('inputYear', None), make=request.form.get('inputMake', None), model=request.form.get('inputModel', None),
-        price=request.form.get('inputPrice', None), category_name=request.form.get('inputCategory', None), mileage=request.form.get('inputMileage', None),
-        description=request.form.get('inputDescription', None), trim=request.form.get('inputTrim', ""), image_url=request.form.get('inputURL', None), user_id=login_session['user_id'])
+        category_name = request.form.get('inputCategory', None)
+        mileage = request.form.get('inputMileage', None)
+        description = request.form.get('inputDescription', None)
+        newVehicle = Vehicle(year=request.form.get('inputYear', None),
+                             make=request.form.get('inputMake', None),
+                             model=request.form.get('inputModel', None),
+                             price=request.form.get('inputPrice', None),
+                             category_name=category_name,
+                             mileage=mileage,
+                             description=description,
+                             trim=request.form.get('inputTrim', ""),
+                             image_url=request.form.get('inputURL', None),
+                             user_id=login_session['user_id'])
         session.add(newVehicle)
         session.commit()
-        flash('{0} {1} {2} {3} Added'.format(newVehicle.year, newVehicle.make, newVehicle.model, newVehicle.trim), "success")
+        flash('{0} {1} {2} {3} Added'.format(
+            newVehicle.year, newVehicle.make, newVehicle.model,
+            newVehicle.trim), "success")
         if category_name is not None:
-            return redirect(url_for('categoryItems', category_name=category_name))
+            return redirect(url_for('categoryItems',
+                                    category_name=category_name))
         return redirect('/')
     else:
         categories = session.query(Category).all()
-        return render_template('addvehicle.html', category_name=category_name, login_session=login_session, state=get_state(), categories=categories)
+        return render_template('addvehicle.html', category_name=category_name,
+                               login_session=login_session, state=get_state(),
+                               categories=categories)
+
 
 @app.route('/catalog/<category_name>/<item_id>/edit', methods=['GET', 'POST'])
 def editVehicle(item_id, category_name):
     if 'username' not in login_session:
         flash('Login to edit vehicles', 'danger')
-        return redirect(url_for('item', category_name=category_name, item_id=item_id))
+        return redirect(url_for('item', category_name=category_name,
+                                item_id=item_id))
     if request.method == 'POST':
-        editedVehicle = session.query(Vehicle).filter_by(category_name=category_name).filter_by(id=item_id).one()
+        editedVehicle = session.query(Vehicle).filter_by(
+            category_name=category_name).filter_by(id=item_id).one()
         editedVehicle.year = request.form.get('inputYear', None)
         editedVehicle.make = request.form.get('inputMake', None)
         editedVehicle.model = request.form.get('inputModel', None)
@@ -237,55 +270,76 @@ def editVehicle(item_id, category_name):
         editedVehicle.category_name = request.form.get('inputCategory', None)
         session.add(editedVehicle)
         session.commit()
-        flash('{0} {1} {2} {3} Edited'.format(editedVehicle.year, editedVehicle.make, editedVehicle.model, editedVehicle.trim), "success")
-        return redirect(url_for('item', category_name=category_name, item_id=item_id))
+        flash('{0} {1} {2} {3} Edited'.format(
+            editedVehicle.year, editedVehicle.make,
+            editedVehicle.model, editedVehicle.trim), "success")
+        return redirect(url_for('item', category_name=category_name,
+                                item_id=item_id))
 
     else:
         categories = session.query(Category).all()
-        vehicle = session.query(Vehicle).filter_by(category_name=category_name).filter_by(id=item_id).one()
+        vehicle = session.query(Vehicle).filter_by(
+            category_name=category_name).filter_by(id=item_id).one()
         if vehicle.user_id != login_session['user_id']:
-            flash('You cannot edit this vehicle because you are not the owner', 'danger')
-            return redirect(url_for('item', category_name=category_name, item_id=item_id))
-            
-        return render_template('editvehicle.html', category_name=category_name, vehicle=vehicle, categories=categories,
+            flash('You cannot edit this vehicle because you are not the owner',
+                  'danger')
+            return redirect(url_for('item', category_name=category_name,
+                            item_id=item_id))
+        return render_template(
+            'editvehicle.html', category_name=category_name,
+            vehicle=vehicle, categories=categories,
             state=get_state(), login_session=login_session)
 
-@app.route('/catalog/<category_name>/<item_id>/delete', methods=['GET', 'POST'])
+
+@app.route('/catalog/<category_name>/<item_id>/delete',
+           methods=['GET', 'POST'])
 def deleteVehicle(item_id, category_name):
     if 'username' not in login_session:
         flash('Login to delete vehicles', 'danger')
-        return redirect(url_for('item', category_name=category_name, item_id=item_id))
+        return redirect(url_for('item', category_name=category_name,
+                                item_id=item_id))
     if request.method == 'POST':
-        vehicle = session.query(Vehicle).filter_by(category_name=category_name).filter_by(id=item_id).one()
+        vehicle = session.query(Vehicle).filter_by(
+            category_name=category_name).filter_by(
+            id=item_id).one()
         session.delete(vehicle)
         session.commit()
-        flash('Successfully deleted {0} {1} {2} {3}'.format(vehicle.year, vehicle.make, vehicle.model, vehicle.trim), "success")
+        flash('Successfully deleted {0} {1} {2} {3}'.format(
+            vehicle.year, vehicle.make, vehicle.model, vehicle.trim),
+            "success")
         return redirect('/')
     else:
         categories = session.query(Category).all()
-        vehicle = session.query(Vehicle).filter_by(category_name=category_name).filter_by(id=item_id).one()
+        vehicle = session.query(Vehicle).filter_by(
+            category_name=category_name) .filter_by(id=item_id).one()
         if vehicle.user_id != login_session['user_id']:
-            flash('You cannot delete this vehicle because you are not the owner', 'danger')
-            return redirect(url_for('item', category_name=category_name, item_id=item_id))
-            
-        return render_template('deletevehicle.html', vehicle=vehicle,
+            flash(('You cannot delete this vehicle '
+                  'because you are not the owner'),
+                  'danger')
+            return redirect(url_for('item', category_name=category_name,
+                                    item_id=item_id))
+        return render_template(
+            'deletevehicle.html', vehicle=vehicle,
             state=get_state(), login_session=login_session)
+
 
 @app.route('/catalog/JSON')
 def catalogJSON():
     categories = session.query(Category).all()
     return jsonify(categories=[r.serialize for r in categories])
 
+
 @app.route('/catalog/<category_name>/JSON')
 def categoryJSON(category_name):
     vehicles = session.query(Vehicle).filter_by(category_name=category_name)
     return jsonify(vehicles=[r.serialize for r in vehicles])
 
+
 @app.route('/catalog/<category_name>/<item_id>/JSON')
 def vehicleJSON(category_name, item_id):
-    vehicle = session.query(Vehicle).filter_by(category_name=category_name).filter_by(id=item_id).one()
+    vehicle = session.query(Vehicle).filter_by(
+        category_name=category_name).filter_by(id=item_id).one()
     return jsonify(vehicle=vehicle.serialize)
-
 
 
 if __name__ == '__main__':

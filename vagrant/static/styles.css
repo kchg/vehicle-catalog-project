@@ -1,6 +1,3 @@
-body {
-}
-
 
 h2 {
     font-family: 'georgia', serif;
@@ -34,8 +31,6 @@ a {
 Header
 */
 
-.page-header {
-}
 
 .header_info {
     display: flex;
@@ -133,7 +128,6 @@ content {
 .name {
     width: 50%;
     display: inline-block;
-    float: left;
 }
 
 .description {
