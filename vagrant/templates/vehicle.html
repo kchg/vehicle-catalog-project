@@ -24,13 +24,13 @@
 </div>
 </div>
 <script>
-        var token = "{{ login_session['access_token'] }}";
-        if (token == 'null' || token == '') {
-            $('#editButton').hide();
-            $('#deleteButton').hide();
-        } else {
-            $('#editButton').show();
-            $('#deleteButton').show();
-        }
-    </script>
-    {% endblock %}
+    var token = "{{ login_session['access_token'] }}";
+    if (token == 'null' || token == '') {
+        $('#editButton').hide();
+        $('#deleteButton').hide();
+    } else {
+        $('#editButton').show();
+        $('#deleteButton').show();
+    }
+</script>
+{% endblock %}

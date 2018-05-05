@@ -1,56 +1,17 @@
-
 h2 {
     font-family: 'georgia', serif;
     margin: 0;
     font-size: 2em;
 }
 
-
 a {
     font-size: 1.5em;
-}
-
-.pane {
-    position: absolute;
-    left: 25%;
-    border: 2px solid;
-    border-radius: 25px;
-    padding: 5px;
-    margin: 5px;
-    border-color: #999999;
-    background-color: #333333
 }
 
 .flash-message {
     text-align: center;
     margin: auto;
     width: 30%;
-}
-
-/*
-Header
-*/
-
-
-.header_info {
-    display: flex;
-    margin: auto;
-    width: 1060px;
-    justify-content: space-between;
-    flex-direction: row;
-    align-items: center;
-}
-
-.header_title {
-    padding: 10px;
-    font-weight: 500;
-    font-size: 46px;
-    text-align: center;
-    text-decoration: none;
-    color: black;
-    font-family: Helvetica, sans-serif;
-    font-weight: bold;
-    
 }
 
 .login_logout {
@@ -71,53 +32,8 @@ Header
     margin: auto;
 }
 
-/*
-Content
-*/
-
-.catalog,
-.item,
-content {
-    margin: auto;
-    width: 1060px;
-    display: flex;
-    justify-content: space-around;
-    align-content: center;
-    background-color: #ffffff;
-    flex-direction: row;
-    box-shadow: 5px 10px 18px #888888;
-    border: 1px solid black;
-}
-
-.information {
-    display: flex;
-    flex-direction: column;
-    margin: auto;
-    width: 1060px;
-    align-content: center;
-    background-color: #ffffff;
-    box-shadow: 5px 10px 18px #888888;
-    border: 1px solid black;
-    align-items: center;
-}
-
-.category {
-    padding-right: 20px;
-    border-right: 1px solid black;
-}
-
-.recent,
-.items {
-    text-align: left;
-    padding-left: 40px;
-}
-
 .vehicle {
     align-items: center;
-}
-
-.vehicle_image {
-    margin: auto;
 }
 
 .vehicle_title {
@@ -125,21 +41,3 @@ content {
     font-size: 2em;
 }
 
-.name {
-    width: 50%;
-    display: inline-block;
-}
-
-.description {
-    text-align: left;
-}
-
-.price {
-    text-align: right;
-    width: 50%;
-    float: right;
-}
-
-.flash {
-    background: #cee5f5;
-}

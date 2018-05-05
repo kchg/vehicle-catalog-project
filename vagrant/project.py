@@ -257,6 +257,7 @@ def editVehicle(item_id, category_name):
         return redirect(url_for('item', category_name=category_name,
                                 item_id=item_id))
     if request.method == 'POST':
+        # Grab all the data from the editvehicle.html form
         editedVehicle = session.query(Vehicle).filter_by(
             category_name=category_name).filter_by(id=item_id).one()
         editedVehicle.year = request.form.get('inputYear', None)
