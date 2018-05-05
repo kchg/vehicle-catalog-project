@@ -271,6 +271,20 @@ def deleteVehicle(item_id, category_name):
         return render_template('deletevehicle.html', vehicle=vehicle,
             state=get_state(), login_session=login_session)
 
+@app.route('/catalog/JSON')
+def catalogJSON():
+    categories = session.query(Category).all()
+    return jsonify(categories=[r.serialize for r in categories])
+
+@app.route('/catalog/<category_name>/JSON')
+def categoryJSON(category_name):
+    vehicles = session.query(Vehicle).filter_by(category_name=category_name)
+    return jsonify(vehicles=[r.serialize for r in vehicles])
+
+@app.route('/catalog/<category_name>/<item_id>/JSON')
+def vehicleJSON(category_name, item_id):
+    vehicle = session.query(Vehicle).filter_by(category_name=category_name).filter_by(id=item_id).one()
+    return jsonify(vehicle=vehicle.serialize)
 
 
 

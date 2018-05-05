@@ -23,7 +23,6 @@ class User(Base):
 
 class Category(Base):
     __tablename__ = 'category'
-    id = Column(Integer)
     name = Column(String(250), primary_key=True)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
@@ -32,7 +31,6 @@ class Category(Base):
     def serialize(self):
         return {
             'name': self.name,
-            'id': self.id,
         }
 
 class Vehicle(Base):
@@ -58,8 +56,15 @@ class Vehicle(Base):
     @property
     def serialize(self):
         return {
-            'name': self.name,
+            'year': self.year,
+            'make': self.make,
+            'model': self.model,
+            'trim': self.trim,
+            'price': self.price,
+            'mileage': self.mileage,
+            'image_url': self.image_url,
             'description': self.description,
+            'category_name': self.category_name,
             'id': self.id,
         }
 
