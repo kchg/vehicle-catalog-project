@@ -1,0 +1,64 @@
+{% extends "base.html" %} {% block content %}
+<div class="jumbotron vehicle">
+    <div class="page-header text-center">
+        <h1>Edit {{vehicle.year}} {{vehicle.make}} {{vehicle.model}}</h1>
+    </br>
+    </div>
+
+    <form action="{{url_for('editVehicle', category_name=vehicle.category_name, item_id=vehicle.id)}}" method= 'post'>
+        <div class="form-row">
+            <div class="form-group col-3">
+                <label for="inputYear">Year</label>
+                <input type="number" class="form-control" name="inputYear" min="1900" max="2099" step="1" value={{vehicle.year}}>
+            </div>
+            <div class="form-group col-3">
+                <label for="inputMake">Make</label>
+                <input type="text" class="form-control" name="inputMake" value={{vehicle.make}}>
+            </div>
+            <div class="form-group col-3">
+                <label for="inputModel">Model</label>
+                <input type="text" class="form-control" name="inputModel" value={{vehicle.model}}>
+            </div>
+            <div class="form-group col-3">
+                    <label for="inputTrim">Trim</label>
+                    <input type="text" class="form-control" id="inputTrim" value={{vehicle.trim}}>
+            </div>
+
+        </div>
+        <div class="form-row">
+            <div class="form-group col-3">
+                <label for="inputPrice">Price (USD)</label>
+                <input type="number" class="form-control" name="inputPrice" step="0.01" value={{vehicle.price}}>
+            </div>
+            <div class="form-group col-3">
+                <label for="inputMileage">Mileage (miles)</label>
+                <input type="number" class="form-control" name="inputMileage" step="1" value={{vehicle.mileage}}>
+            </div>
+            <div class="form-group col-6">
+                <label for="inputCategory">Category</label>
+                <select name="inputCategory" class="form-control">
+                    {% if category_name %}
+                    <option selected>{{vehicle.category_name}}</option>
+                    {% endif %} {% for i in categories %}
+                    <option>{{i.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-12">
+                <label for="inputURL">Image URL</label>
+                <input type="text" class="form-control" name="inputURL" value="{{vehicle.image_url}}">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-12">
+                <label for="description">Description</label>
+                <textarea class="form-control" name="inputDescription" rows="10">{{vehicle.description}}</textarea>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+{% endblock %}

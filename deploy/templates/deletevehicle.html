@@ -1,0 +1,12 @@
+{% extends "base.html" %} {% block content %}
+<div class="jumbotron text-center">
+    <div class="page-header text-center">
+        <h1>Delete Vehicle</h1>
+    </div>
+    <p>Are you sure you want to delete {{vehicle.year}} {{vehicle.make}} {{vehicle.model}}?</p> 
+    <form action="{{url_for('deleteVehicle', category_name=vehicle.category_name, item_id=vehicle.id)}}" method='post'>
+        <button type="submit" class="btn btn-danger">Delete</button>
+    </form>
+</div>
+</div>
+{% endblock %}

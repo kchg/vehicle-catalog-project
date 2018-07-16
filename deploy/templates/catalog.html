@@ -1,0 +1,36 @@
+{% extends "base.html" %} {% block content %}
+<div class="jumbotron">
+    <div class="row">
+        <div class="col-4 category">
+            <h2>Category</h2>
+            <ul>
+                {% for i in categories %}
+                <li>
+                    <a href="{{url_for('categoryItems', category_name=i.name)}}">{{i.name}}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col-8 items">
+            <h2>Recently Added</h2>
+            <ul>
+                {% for i in recents %}
+                <li>
+                    <a href="{{ url_for('item', category_name=i.category_name, item_id=i.id) }}">{{i.year}} {{i.make}} {{i.model}}</a>
+                </li>
+                {% endfor %}
+            </ul>
+
+            <a href="{{url_for('addVehicle')}}" id="newButton" class="btn btn-primary">Add a Vehicle</a>
+        </div>
+    </div>
+</div>
+<script>
+        var token = "{{ login_session['access_token'] }}";
+        if (token == 'null' || token == '') {
+            $('#newButton').hide();
+        } else {
+            $('#newButton').show();
+        }
+    </script>
+{% endblock %}
