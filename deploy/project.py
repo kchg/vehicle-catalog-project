@@ -12,14 +12,16 @@ import string
 import httplib2
 import json
 import requests
+import os
 
 app = Flask(__name__)
+client_secrets_file = '/var/www/vehicle-catalog-project/deploy/client_secrets.json'
 
 CLIENT_ID = json.loads(
-    open('client_secrets.json', 'r').read())['web']['client_id']
+    open(client_secrets_file, 'r').read())['web']['client_id']
 APPLICATION_NAME = "Item Catalog Application"
 
-engine = create_engine('sqlite:///vehiclecatalog.db')
+engine = create_engine('postgresql://catalog:password@localhost/catalog')
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
@@ -61,7 +63,7 @@ def login():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in xrange(32))
     login_session['state'] = state
-    return render_template('login.html', STATE=state)
+    return render_template('login.html', STATE=state, login_session=login_session)
 
 
 @app.route('/gconnect', methods=['POST'])
@@ -82,7 +84,7 @@ def gconnect():
 
     try:
         # Exchange the one-time-token for the credentials
-        oauth_flow = flow_from_clientsecrets('client_secrets.json', scope='')
+        oauth_flow = flow_from_clientsecrets(client_secrets_file, scope='')
         oauth_flow.redirect_uri = 'postmessage'
         credentials = oauth_flow.step2_exchange(code)
     except FlowExchangeError:

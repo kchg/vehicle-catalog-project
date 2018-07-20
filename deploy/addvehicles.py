@@ -24,11 +24,11 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 
-owner = User(id = 1, name="Kevin Chiang", email="kevinc9364@gmail.com")
+owner = User(name="Kevin Chiang", email="kevinc9364@gmail.com")
 session.add(owner)
 session.commit()
 
-owner2 = User(id = 2, name="Another User", email="something@gmail.com")
+owner2 = User(name="Another User", email="something@gmail.com")
 session.add(owner2)
 session.commit()
 

@@ -1,2 +1,5 @@
 sqlalchemy
 flask
+oauth2client
+requests
+psycopg2

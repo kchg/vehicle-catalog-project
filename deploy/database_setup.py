@@ -48,7 +48,7 @@ class Vehicle(Base):
     image_url = Column(String(250))
 
     category_name = Column(String(80), ForeignKey('category.name'))
-    category = relationship(Category, cascade="all, delete-orphan", single_parent=True)
+    category = relationship(Category, single_parent=True)
 
     user_id = Column(Integer, ForeignKey('catalog_user.id'))
     user = relationship(User)
